@@ -4,8 +4,7 @@ from datetime import timedelta
 from config.db import conn
 from model.user import users
 from schema.auth.token import Token
-from schema.user import User
-from service.jugador import create_jugador
+from schema.user import User, UserEdit
 from utils.create_admin import get_user_by_email
 from service.auth.auth import ACCESS_TOKEN_EXPIRE_MINUTES, authenticate_user, create_access_token, get_current_user, get_password_hash
 
@@ -18,7 +17,6 @@ def register_user(user: User):
     print(user)
     hashed_password = get_password_hash(user.password)
     user_insert = {"nombre": user.nombre, "email": user.email, "password": hashed_password, "disabled": False}
-    create_jugador(user)
     conn.execute(users.insert().values(user_insert))
     conn.commit()
 
@@ -47,6 +45,4 @@ async def login_for_access_token(
 @auth.get("/protected-route")
 async def protected_route(current_user: dict = Depends(get_current_user)):
     return {"message": f"Hello,{current_user.nombre} you're authenticated!"}
-
-
 
